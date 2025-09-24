@@ -62,7 +62,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\_Scripts\_PLAYERACTIONS.cs" />
-    <Compile Include="Assets\_Scripts\InputScript.cs" />
+    <Compile Include="Assets\_Scripts\MaquinaDeEstados.cs" />
+    <Compile Include="Assets\_Scripts\Movimiento.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
