@@ -12,8 +12,8 @@ public class Movimiento : MonoBehaviour
     [SerializeField] private const float velocidadMaxima = 10f;
     private float fuerzaSalto;
     [SerializeField] private float fuerzaSaltoReal = 0;
-    [SerializeField] private const float fuerzaSaltoMaxima = 2000;
-    [SerializeField] Image forceCurrentImage;
+    [SerializeField] private const float fuerzaSaltoMaxima = 1000;      // Si se decide que se va a arreglar el bug de saltar más alto cuando se corre,
+    [SerializeField] Image forceCurrentImage;                           // la fuerza máxima habría que aumentarla
 
     private void Awake()
     {
@@ -24,7 +24,6 @@ public class Movimiento : MonoBehaviour
     private void Start()
     {
         forceCurrentImage.fillAmount = 0;
-        //Destroy(forceCurrentImage.gameObject);
     }
 
     private void OnEnable()
@@ -60,16 +59,15 @@ public class Movimiento : MonoBehaviour
         fuerzaSalto = 100;
     }
 
-    private void OnJumpCanceled(InputAction.CallbackContext ctx)
-    {
+    private void OnJumpCanceled(InputAction.CallbackContext ctx)        // Cuanto más rápido vayas, más alto saltas
+    {                                                                   // Esto es una feature, no un bug ( ͡° ͜ʖ ͡°)
         if (fuerzaSaltoReal > fuerzaSaltoMaxima)
         {
-            fuerzaSaltoReal = 2000;
+            fuerzaSaltoReal = fuerzaSaltoMaxima;
         }
 
         rb.AddForce(Vector3.up * fuerzaSaltoReal, ForceMode.Impulse);
         print("Se ha saltado con una fuerza de " + fuerzaSaltoReal);
-        fuerzaSaltoReal = 0;
         MaquinaDeEstados.miEstado = MaquinaDeEstados.Estados.air;
     }
 
@@ -101,7 +99,6 @@ public class Movimiento : MonoBehaviour
             print(fuerzaSaltoReal);
         }
         forceCurrentImage.fillAmount = fuerzaSaltoReal / fuerzaSaltoMaxima;
-        print(forceCurrentImage.fillAmount);
     }
 
     private void OnCollisionEnter(Collision other)
@@ -120,5 +117,7 @@ public class Movimiento : MonoBehaviour
         {
             MaquinaDeEstados.miEstado = MaquinaDeEstados.Estados.air;
         }
+        //print(fuerzaSaltoReal + " " + rb.linearVelocity.y);
+        fuerzaSaltoReal = 0;
     }
 }
