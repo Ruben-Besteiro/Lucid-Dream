@@ -24,6 +24,7 @@ public class Movimiento : MonoBehaviour
     private void Start()
     {
         forceCurrentImage.fillAmount = 0;
+        GetComponent<MeshRenderer>().enabled = false;       // Hacemos que el personaje sea invisible para que sea solo la cámara
     }
 
     private void OnEnable()
@@ -60,7 +61,7 @@ public class Movimiento : MonoBehaviour
     }
 
     private void OnJumpCanceled(InputAction.CallbackContext ctx)        // Cuanto más rápido vayas, más alto saltas
-    {                                                                   // Esto es una feature, no un bug ( ͡° ͜ʖ ͡°)
+    {                                                                   // Esto es una feature, no un bug ( ͡° ͜ʖ ͡°) (arreglado creo)
         if (fuerzaSaltoReal > fuerzaSaltoMaxima)
         {
             fuerzaSaltoReal = fuerzaSaltoMaxima;
@@ -73,17 +74,12 @@ public class Movimiento : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // MOVIMIENTO
-        transform.rotation = Quaternion.Euler(Vector3.up * 10 * Time.deltaTime * Input.mousePosition.x);
-
         Vector3 vectorMovVerdadero = transform.TransformDirection(new Vector3(vectorMov.x, 0, vectorMov.y).normalized);     // Con TransformDirection pasamos de global a local
 
         if (vectorMovVerdadero != Vector3.zero)         // Esto chequea si estamos llamando a OnMovePerformed
         {
             rb.AddForce(vectorMovVerdadero * fuerzaMov, ForceMode.Acceleration);
-        } else
-        {
-            rb.linearVelocity -= rb.linearVelocity / 10;        // Si no le damos a nada pierde un 10% de su velocidad por cada actualización de físicas
+            rb.linearVelocity -= rb.linearVelocity / 10;        // Esto hace que perdamos inercia en las direcciones que no estemos pulsando
         }
 
         Mathf.Clamp(rb.linearVelocity.x, -velocidadMaxima, velocidadMaxima);        // Limitamos la velocidad (la velocidad máxima se puede cambiar al hacer acciones)
@@ -103,21 +99,25 @@ public class Movimiento : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.tag == "Suelo")
+        if (other.gameObject.tag is "Suelo")
         {
             print(fuerzaSaltoReal);
             Mathf.Clamp(fuerzaSaltoReal, 0, fuerzaSaltoMaxima);
             MaquinaDeEstados.miEstado = MaquinaDeEstados.Estados.idle;
         }
+
+        if (other.gameObject.tag is "Pared")
+        {
+            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;        // No funciona
+        }
     }
 
     private void OnCollisionExit(Collision other)
     {
-        if (other.gameObject.tag == "Suelo")
+        if (other.gameObject.tag is "Suelo")
         {
             MaquinaDeEstados.miEstado = MaquinaDeEstados.Estados.air;
         }
-        //print(fuerzaSaltoReal + " " + rb.linearVelocity.y);
         fuerzaSaltoReal = 0;
     }
 }
