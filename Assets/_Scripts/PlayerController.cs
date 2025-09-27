@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
 
     [SerializeField] private float fuerzaMov = 10f;
-    [SerializeField] private const float velocidadMaxima = 150f;
+    //[SerializeField] private const float velocidadMaxima = 1000f;
     private float fuerzaSalto;
     [SerializeField] private float fuerzaSaltoReal = 0;
     [SerializeField] private const float fuerzaSaltoMaxima = 2500;
@@ -79,16 +79,16 @@ public class PlayerController : MonoBehaviour
         {
             if (MaquinaDeEstados.miEstado != MaquinaDeEstados.Estados.air)
             {
-                rb.AddForce(vectorMovVerdadero * fuerzaMov * 2, ForceMode.Acceleration);        // Vamos más rápido en el suelo
+                rb.AddForce(vectorMovVerdadero * fuerzaMov * 4, ForceMode.Acceleration);        // Vamos más rápido en el suelo
             } else
             {
-                rb.AddForce(vectorMovVerdadero * fuerzaMov * 1.75f, ForceMode.Acceleration);
+                rb.AddForce(vectorMovVerdadero * fuerzaMov * 3.33f, ForceMode.Acceleration);
             }
         }
         rb.linearVelocity -= new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z) / 10;         // Esto hace que perdamos inercia en las direcciones que no estemos pulsando
 
-        Mathf.Clamp(rb.linearVelocity.x, -velocidadMaxima, velocidadMaxima);
-        Mathf.Clamp(rb.linearVelocity.z, -velocidadMaxima, velocidadMaxima);
+        /*Mathf.Clamp(rb.linearVelocity.x, -velocidadMaxima, velocidadMaxima);
+        Mathf.Clamp(rb.linearVelocity.z, -velocidadMaxima, velocidadMaxima);*/
 
 
         print(new Vector2(rb.linearVelocity.x, rb.linearVelocity.z).magnitude);
