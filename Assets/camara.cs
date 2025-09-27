@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class camara : MonoBehaviour
+public class Camara : MonoBehaviour
 {
     public float sensibilidad = 10f;
     private float rotacionX = 0f;
