@@ -8,8 +8,8 @@ public class PlayerController : MonoBehaviour
     private Vector2 vectorMov;
     private Rigidbody rb;
 
-    [SerializeField] private float fuerzaMov = 40f;
-    [SerializeField] private const float velocidadMaxima = 10f;
+    [SerializeField] private float fuerzaMov = 10f;
+    [SerializeField] private const float velocidadMaxima = 100f;
     private float fuerzaSalto;
     [SerializeField] private float fuerzaSaltoReal = 0;
     [SerializeField] private const float fuerzaSaltoMaxima = 2500;
@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         forceCurrentImage.fillAmount = 0;
-        GetComponent<MeshRenderer>().enabled = false;       // Hacemos que el personaje sea invisible para que sea solo la cámara
+        //GetComponent<MeshRenderer>().enabled = false;       // Hacemos que el personaje sea invisible para que sea solo la cámara
     }
 
     private void OnEnable()
@@ -78,35 +78,30 @@ public class PlayerController : MonoBehaviour
 
         if (vectorMovVerdadero != Vector3.zero)         // Esto chequea si estamos llamando a OnMovePerformed
         {
-            rb.AddForce(vectorMovVerdadero * fuerzaMov, ForceMode.Acceleration);
-            rb.linearVelocity -= new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z) / 10;        // Esto hace que perdamos inercia en las direcciones que no estemos pulsando
+            rb.AddForce(vectorMovVerdadero * fuerzaMov * 2, ForceMode.Acceleration);
         }
+        rb.linearVelocity -= new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z) / 10;         // Esto hace que perdamos inercia en las direcciones que no estemos pulsando
 
         Mathf.Clamp(rb.linearVelocity.x, -velocidadMaxima, velocidadMaxima);        // Limitamos la velocidad (la velocidad máxima se puede cambiar al hacer acciones)
         Mathf.Clamp(velocidadMaxima, -Mathf.Infinity, velocidadMaxima);
         Mathf.Clamp(rb.linearVelocity.z, -velocidadMaxima, velocidadMaxima);
 
+        //print(rb.linearVelocity.magnitude);
+
 
         // SALTO
         if (controls.Player.Jump.IsPressed() && (MaquinaDeEstados.miEstado == MaquinaDeEstados.Estados.idle || MaquinaDeEstados.miEstado == MaquinaDeEstados.Estados.run))
         {
-            print(MaquinaDeEstados.miEstado);
+            //print(MaquinaDeEstados.miEstado);
             fuerzaSaltoReal += fuerzaSalto;
         }
         forceCurrentImage.fillAmount = fuerzaSaltoReal / fuerzaSaltoMaxima;
 
-        print(rb.linearVelocity.y);
+        //print(rb.linearVelocity.y);
     }
 
     private void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.tag is "Suelo")
-        {
-            print(fuerzaSaltoReal);
-            Mathf.Clamp(fuerzaSaltoReal, 0, fuerzaSaltoMaxima);
-            MaquinaDeEstados.miEstado = MaquinaDeEstados.Estados.idle;
-        }
-
         if (other.gameObject.tag is "Pared")
         {
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;        // No funciona
@@ -115,7 +110,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionExit(Collision other)
     {
-        if (other.gameObject.tag is "Suelo")
+        if (/*other.gameObject.tag is "Suelo" ||*/ other.contactCount == 0)
         {
             MaquinaDeEstados.miEstado = MaquinaDeEstados.Estados.air;
         }

@@ -28,6 +28,7 @@ public class MaquinaDeEstados : MonoBehaviour
 
         if (miEstado == Estados.air)
         {
+            print("Maincra");
             rb.AddForce(Physics.gravity * 1.25f, ForceMode.Acceleration);
         }
     }
@@ -44,7 +45,6 @@ public class MaquinaDeEstados : MonoBehaviour
     {
         if (/*other.gameObject.tag is "Suelo" || */other.contactCount == 0)
         {
-            print("Has saltado");
             miEstado = Estados.air;
             rb.AddForce(Physics.gravity * 1.5f, ForceMode.Acceleration);
         }
