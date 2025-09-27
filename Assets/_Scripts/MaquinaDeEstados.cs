@@ -28,12 +28,11 @@ public class MaquinaDeEstados : MonoBehaviour
 
         if (miEstado == Estados.air)
         {
-            print("Maincra");
             rb.AddForce(Physics.gravity * 1.25f, ForceMode.Acceleration);
         }
     }
 
-    private void OnCollisionEnter(Collision other)
+    private void OnCollisionStay(Collision other)
     {
         if (rb.linearVelocity.y < .1f || other.contactCount != 0)        // Si aterrizamos nos devuelve nuestro salto
         {

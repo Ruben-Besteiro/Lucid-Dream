@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
 
     [SerializeField] private float fuerzaMov = 10f;
-    [SerializeField] private const float velocidadMaxima = 100f;
+    [SerializeField] private const float velocidadMaxima = 150f;
     private float fuerzaSalto;
     [SerializeField] private float fuerzaSaltoReal = 0;
     [SerializeField] private const float fuerzaSaltoMaxima = 2500;
@@ -68,7 +68,6 @@ public class PlayerController : MonoBehaviour
         }
 
         rb.AddForce(Vector3.up * fuerzaSaltoReal, ForceMode.Impulse);
-        print("Se ha saltado con una fuerza de " + fuerzaSaltoReal);
         MaquinaDeEstados.miEstado = MaquinaDeEstados.Estados.air;
     }
 
@@ -78,26 +77,29 @@ public class PlayerController : MonoBehaviour
 
         if (vectorMovVerdadero != Vector3.zero)         // Esto chequea si estamos llamando a OnMovePerformed
         {
-            rb.AddForce(vectorMovVerdadero * fuerzaMov * 2, ForceMode.Acceleration);
+            if (MaquinaDeEstados.miEstado != MaquinaDeEstados.Estados.air)
+            {
+                rb.AddForce(vectorMovVerdadero * fuerzaMov * 2, ForceMode.Acceleration);        // Vamos más rápido en el suelo
+            } else
+            {
+                rb.AddForce(vectorMovVerdadero * fuerzaMov * 1.75f, ForceMode.Acceleration);
+            }
         }
         rb.linearVelocity -= new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z) / 10;         // Esto hace que perdamos inercia en las direcciones que no estemos pulsando
 
-        Mathf.Clamp(rb.linearVelocity.x, -velocidadMaxima, velocidadMaxima);        // Limitamos la velocidad (la velocidad máxima se puede cambiar al hacer acciones)
-        Mathf.Clamp(velocidadMaxima, -Mathf.Infinity, velocidadMaxima);
+        Mathf.Clamp(rb.linearVelocity.x, -velocidadMaxima, velocidadMaxima);
         Mathf.Clamp(rb.linearVelocity.z, -velocidadMaxima, velocidadMaxima);
 
-        //print(rb.linearVelocity.magnitude);
+
+        print(new Vector2(rb.linearVelocity.x, rb.linearVelocity.z).magnitude);
 
 
         // SALTO
         if (controls.Player.Jump.IsPressed() && (MaquinaDeEstados.miEstado == MaquinaDeEstados.Estados.idle || MaquinaDeEstados.miEstado == MaquinaDeEstados.Estados.run))
         {
-            //print(MaquinaDeEstados.miEstado);
             fuerzaSaltoReal += fuerzaSalto;
         }
         forceCurrentImage.fillAmount = fuerzaSaltoReal / fuerzaSaltoMaxima;
-
-        //print(rb.linearVelocity.y);
     }
 
     private void OnCollisionEnter(Collision other)
