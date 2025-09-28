@@ -55,8 +55,20 @@ public class MaquinaDeEstados : MonoBehaviour
         {
             if (contact.normal.y > 0.9f)
             {
-                MaquinaDeEstados.miEstado = MaquinaDeEstados.Estados.idle;
+                miEstado = Estados.idle;
             }
         }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        foreach (ContactPoint contact in collision.contacts)
+        {
+            if ((Mathf.Abs(contact.normal.x) > 0.75f || Mathf.Abs(contact.normal.z) > 0.75f))
+            {
+                return;
+            }
+        }
+        miEstado = Estados.air;     // Esto solo se ejecuta si no está tocando el suelo (estamos en el aire)
     }
 }
