@@ -4,7 +4,7 @@ public class MaquinaDeEstados : MonoBehaviour
 {
     public enum Estados
     {
-        idle, run, air, die
+        idle, run, air, wallRun
     }
     public static Estados miEstado;
     Rigidbody rb;
@@ -34,18 +34,29 @@ public class MaquinaDeEstados : MonoBehaviour
 
     private void OnCollisionStay(Collision other)
     {
-        if (rb.linearVelocity.y < .1f || other.contactCount != 0)        // Si aterrizamos nos devuelve nuestro salto
+        foreach (ContactPoint contact in other.contacts)
         {
-            miEstado = Estados.idle;
+            Vector3 normal = contact.normal;
+
+            // Si alguna de sus colisiones es una pared 
+            if ((Mathf.Abs(normal.x) > 0.75f || Mathf.Abs(normal.z) > 0.75f)/* && (new Vector2(rb.linearVelocity.x, rb.linearVelocity.z).magnitude) > 20*/)
+            {
+                miEstado = Estados.wallRun;
+            } else if (Mathf.Abs(normal.y) > 0.75f)      // Si es suelo
+            {
+
+            }
         }
     }
 
-    private void OnColissionExit(Collision other)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (/*other.gameObject.tag is "Suelo" || */other.contactCount == 0)
+        foreach (ContactPoint contact in collision.contacts)
         {
-            miEstado = Estados.air;
-            rb.AddForce(Physics.gravity * 1.5f, ForceMode.Acceleration);
+            if (contact.normal.y > 0.9f)
+            {
+                MaquinaDeEstados.miEstado = MaquinaDeEstados.Estados.idle;
+            }
         }
     }
 }

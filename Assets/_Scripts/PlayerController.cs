@@ -69,32 +69,41 @@ public class PlayerController : MonoBehaviour
 
         rb.AddForce(Vector3.up * fuerzaSaltoReal, ForceMode.Impulse);
         MaquinaDeEstados.miEstado = MaquinaDeEstados.Estados.air;
+        fuerzaSaltoReal = 0;
     }
 
     private void FixedUpdate()
     {
+        Movimiento();
+        Salto();
+    }
+
+
+
+
+    void Movimiento()
+    {
         Vector3 vectorMovVerdadero = transform.TransformDirection(new Vector3(vectorMov.x, 0, vectorMov.y).normalized);     // Con TransformDirection pasamos de global a local
+        //Vector3 vectorMovVerdadero = transform.TransformDirection(vectorMov.normalized);
 
         if (vectorMovVerdadero != Vector3.zero)         // Esto chequea si estamos llamando a OnMovePerformed
         {
             if (MaquinaDeEstados.miEstado != MaquinaDeEstados.Estados.air)
             {
                 rb.AddForce(vectorMovVerdadero * fuerzaMov * 4, ForceMode.Acceleration);        // Vamos más rápido en el suelo
-            } else
+            }
+            else
             {
                 rb.AddForce(vectorMovVerdadero * fuerzaMov * 3.33f, ForceMode.Acceleration);
             }
         }
         rb.linearVelocity -= new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z) / 10;         // Esto hace que perdamos inercia en las direcciones que no estemos pulsando
 
-        /*Mathf.Clamp(rb.linearVelocity.x, -velocidadMaxima, velocidadMaxima);
-        Mathf.Clamp(rb.linearVelocity.z, -velocidadMaxima, velocidadMaxima);*/
+        //print(new Vector2(rb.linearVelocity.x, rb.linearVelocity.z).magnitude);
+    }
 
-
-        print(new Vector2(rb.linearVelocity.x, rb.linearVelocity.z).magnitude);
-
-
-        // SALTO
+    void Salto()
+    {
         if (controls.Player.Jump.IsPressed() && (MaquinaDeEstados.miEstado == MaquinaDeEstados.Estados.idle || MaquinaDeEstados.miEstado == MaquinaDeEstados.Estados.run))
         {
             fuerzaSaltoReal += fuerzaSalto;
@@ -102,20 +111,33 @@ public class PlayerController : MonoBehaviour
         forceCurrentImage.fillAmount = fuerzaSaltoReal / fuerzaSaltoMaxima;
     }
 
+
+
     private void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.tag is "Pared")
+        foreach (ContactPoint contact in other.contacts)
         {
-            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;        // No funciona
+            Vector3 normal = contact.normal;
+
+            // Si alguna de sus colisiones es una pared 
+            if ((Mathf.Abs(normal.x) > 0.75f || Mathf.Abs(normal.z) > 0.75f) && (new Vector2(rb.linearVelocity.x, rb.linearVelocity.z).magnitude) > 10)
+            {
+                //Destroy(gameObject);              FUNCIONA
+                rb.constraints = RigidbodyConstraints.FreezeRotation;
+            }
         }
     }
 
     private void OnCollisionExit(Collision other)
     {
-        if (/*other.gameObject.tag is "Suelo" ||*/ other.contactCount == 0)
-        {
-            MaquinaDeEstados.miEstado = MaquinaDeEstados.Estados.air;
+        foreach (ContactPoint contact in other.contacts) {
+            Vector3 normal = contact.normal;
+
+            if (Mathf.Abs(normal.x) > 0.75f || Mathf.Abs(normal.z) > 0.75f)     // NO FUNCIONA
+            {
+                Destroy(gameObject);
+                MaquinaDeEstados.miEstado = MaquinaDeEstados.Estados.air;
+            }
         }
-        fuerzaSaltoReal = 0;
     }
 }
