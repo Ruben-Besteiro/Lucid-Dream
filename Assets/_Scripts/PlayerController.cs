@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
 
     [SerializeField] private float fuerzaMov = 10f;
-    //[SerializeField] private const float velocidadMaxima = 1000f;
+    //[SerializeField] private const float velocidadMaxima = 1000f;         No usamos velocidad máxima, sino un vector de aceleración y uno de fricción
     private float fuerzaSalto;
     [SerializeField] private float fuerzaSaltoReal = 0;
     [SerializeField] private const float fuerzaSaltoMaxima = 2500;
@@ -24,7 +24,6 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         forceCurrentImage.fillAmount = 0;
-        //GetComponent<MeshRenderer>().enabled = false;       // Hacemos que el personaje sea invisible para que sea solo la cámara
     }
 
     private void OnEnable()
@@ -122,7 +121,7 @@ public class PlayerController : MonoBehaviour
             // Si alguna de sus colisiones es una pared 
             if ((Mathf.Abs(normal.x) > 0.75f || Mathf.Abs(normal.z) > 0.75f) && (new Vector2(rb.linearVelocity.x, rb.linearVelocity.z).magnitude) > 10)
             {
-                rb.constraints = RigidbodyConstraints.FreezeRotation;       // No va
+                rb.constraints = RigidbodyConstraints.FreezeRotation;       // No va xd
             }
         }
     }

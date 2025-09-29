@@ -6,10 +6,14 @@ using UnityEngine.UI;
 
 public class Timer : MonoBehaviour
 {
-    [SerializeField] int tiempo;
+    [SerializeField] private int tiempo;
     TextMeshProUGUI textoTiempo;
     [SerializeField] Image fade;
 
+    public int getTiempo()
+    {
+        return tiempo;
+    }
     public void setTiempo (int tiempoNuevo)
     {
         tiempo = tiempoNuevo;
@@ -34,9 +38,12 @@ public class Timer : MonoBehaviour
         StartCoroutine(cuentaAtras());
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        if (tiempo <= 0)
+        if (tiempo > 0)
+        {
+            textoTiempo.text = tiempo.ToString();
+        } else
         {
             textoTiempo.text = "Has muerto";
             GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>().controls.Disable();     // Cuando morimos, los controles se desactivan
@@ -50,7 +57,6 @@ public class Timer : MonoBehaviour
         {
             yield return new WaitForSeconds(1);
             tiempo -= 1;
-            textoTiempo.text = tiempo.ToString();
         }
     }
 }
