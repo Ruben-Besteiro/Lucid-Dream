@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    private _PLAYERACTIONS controls;
+    public _PLAYERACTIONS controls;
     private Vector2 vectorMov;
     private Rigidbody rb;
 
