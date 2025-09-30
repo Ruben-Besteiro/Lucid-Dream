@@ -13,6 +13,11 @@ public class PlayerController : MonoBehaviour
     private float fuerzaSalto;
     [SerializeField] private float fuerzaSaltoReal = 0;
     [SerializeField] private const float fuerzaSaltoMaxima = 2500;
+
+    [SerializeField] private float fuerzaDash = 3000f;
+    [SerializeField] private float dashCooldown = 2f; 
+    private float lastDashTime = -Mathf.Infinity;
+
     [SerializeField] Image forceCurrentImage;
 
     private void Awake()
@@ -33,6 +38,7 @@ public class PlayerController : MonoBehaviour
         controls.Player.Move.canceled += OnMoveCanceled;
         controls.Player.Jump.performed += OnJumpPerformed;
         controls.Player.Jump.canceled += OnJumpCanceled;
+        controls.Player.Dash.performed += OnDashPerformed;
     }
 
     private void OnDisable()
@@ -41,7 +47,9 @@ public class PlayerController : MonoBehaviour
         controls.Player.Move.canceled -= OnMoveCanceled;
         controls.Player.Jump.performed -= OnJumpPerformed;
         controls.Player.Jump.canceled -= OnJumpCanceled;
+        controls.Player.Dash.performed -= OnDashPerformed;
         controls.Player.Disable();
+
     }
 
     private void OnMovePerformed(InputAction.CallbackContext ctx)
@@ -71,10 +79,16 @@ public class PlayerController : MonoBehaviour
         fuerzaSaltoReal = 0;
     }
 
+    private void OnDashPerformed(InputAction.CallbackContext ctx)
+    {
+        Dash();
+    }
+
     private void FixedUpdate()
     {
         Movimiento();
         Salto();
+        Dash();
     }
 
 
@@ -110,7 +124,19 @@ public class PlayerController : MonoBehaviour
         forceCurrentImage.fillAmount = fuerzaSaltoReal / fuerzaSaltoMaxima;
     }
 
+    void Dash()
+    {
+        if (controls.Player.Dash.triggered && Time.time >= lastDashTime + dashCooldown)
+        {
+            Vector3 dashDirection = transform.forward;
 
+            rb.AddForce(dashDirection * fuerzaDash, ForceMode.Impulse);
+
+            lastDashTime = Time.time;
+
+            Debug.Log("Dash");
+        }
+    }
 
     private void OnCollisionEnter(Collision other)
     {

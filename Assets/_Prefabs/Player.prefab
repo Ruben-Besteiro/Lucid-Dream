@@ -261,6 +261,14 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: d230252a-ae7b-4101-b695-0e8546e6cd7f
     m_ActionName: 'Player/Move[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 6caecb39-9d05-465c-9557-cabc7c07ef94
+    m_ActionName: 'Player/Dash[/Keyboard/ctrl]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 900d5400-1716-42a3-8694-0fbfa7313185
+    m_ActionName: 'Player/Rope[/Keyboard/x]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -280,7 +288,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   fuerzaMov: 40
   fuerzaSaltoReal: 0
+  fuerzaDash: 3000
+  dashCooldown: 2
   forceCurrentImage: {fileID: 0}
+  ropeCapsulePrefab: {fileID: 5016967366283323665, guid: 41ece1e9f26a0f24e9809ff316ac00bc, type: 3}
+  maxRopeDistance: 10
+  ropeSwingForce: 20
 --- !u!114 &1286557095088376826
 MonoBehaviour:
   m_ObjectHideFlags: 0
